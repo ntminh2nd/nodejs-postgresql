@@ -58,8 +58,9 @@ const pool = new Pool({
 
   const addEmployee = async (request, response) => {
     const { name, email, dob } = request.body;
+    const isoDateString = dob.toISOString();
     // employees.push({ name, email, dob });
-    pool.query(`INSERT INTO employees (name, email, dob) VALUES ($1, $2, $3) RETURNING *`, [name, email, dob], (error, results) => {
+    pool.query(`INSERT INTO employees (name, email, dob) VALUES ($1, $2, $3) RETURNING *`, [name, email, isoDateString], (error, results) => {
         if (error) {
             return response.status(400).send(error);
         }
@@ -70,8 +71,9 @@ const pool = new Pool({
   const updateEmployee = (request, response) => {
     const id = request.params.id;
     const { name, email, dob } = request.body;
+    const isoDateString = dob.toISOString();
     // employees[id] = { name, email, dob };
-    pool.query(`'UPDATE employees SET name = $1, email = $2, dob = $3 WHERE id = $4`, [name, email, dob, id], (error, results) => {
+    pool.query(`'UPDATE employees SET name = $1, email = $2, dob = $3 WHERE id = $4`, [name, email, isoDateString, id], (error, results) => {
         if (error) {
             return response.status(400).send(error);
         }
@@ -82,8 +84,9 @@ const pool = new Pool({
   const deleteEmployee = (request, response) => {
     const id = request.params.id;
     const { name, email, dob } = request.body;
+    const isoDateString = dob.toISOString();
     // employees[id].shift();
-    pool.query(`'DELETE FROM employees WHERE id = $1`, [id], (error, results) => {
+    pool.query(`'DELETE FROM employees WHERE name = $1, email = $2, dob = $3, id = $4`, [name, email, isoDateString, id], (error, results) => {
         if (error) {
             return response.status(400).send(err);
         }
