@@ -59,11 +59,13 @@ const pool = new Pool({
   const addEmployee = async (request, response) => {
     const { name, email, dob } = request.body;
     const dobConverted = new Date(dob);
-    const isoDateString = dobConverted.toISOString().slice(0, 10);
     // employees.push({ name, email, dob });
-    pool.query(`INSERT INTO employees (name, email, dob) VALUES ($1, $2, $3) RETURNING *`, [name, email, isoDateString], (error, results) => {
+    pool.query(`INSERT INTO employees (name, email, dob) VALUES ($1, $2, $3) RETURNING *`, [name, email, dobConverted], (error, results) => {
         if (error) {
             return response.status(400).send(error);
+        }
+        if (isNaN(dobConverted.getTime())) {
+          return response.status(400).send('Invalid date format. Please use YYYY-MM-DD.');
         }
         return response.status(201).send(`Employee added with ID: ${results.rows[0].id}`);
     }); 
@@ -72,9 +74,9 @@ const pool = new Pool({
   const updateEmployee = (request, response) => {
     const id = request.params.id;
     const { name, email, dob } = request.body;
-    const isoDateString = dobConverted.toISOString().slice(0, 10);
+    const dobConverted = new Date(dob);
     // employees[id] = { name, email, dob };
-    pool.query(`'UPDATE employees SET name = $1, email = $2, dob = $3 WHERE id = $4`, [name, email, isoDateString, id], (error, results) => {
+    pool.query(`UPDATE employees SET name = $1, email = $2, dob = $3 WHERE id = $4 RETURNING *`, [name, email, dobConverted, id], (error, results) => {
         if (error) {
             return response.status(400).send(error);
         }
@@ -85,9 +87,9 @@ const pool = new Pool({
   const deleteEmployee = (request, response) => {
     const id = request.params.id;
     const { name, email, dob } = request.body;
-    const isoDateString = dobConverted.toISOString().slice(0, 10);
+    const dobConverted = new Date(dob);
     // employees[id].shift();
-    pool.query(`'DELETE FROM employees WHERE name = $1, email = $2, dob = $3, id = $4`, [name, email, isoDateString, id], (error, results) => {
+    pool.query(`DELETE FROM employees WHERE name = $1, email = $2, dob = $3, id = $4 RETURNING *`, [name, email, dobConverted, id], (error, results) => {
         if (error) {
             return response.status(400).send(err);
         }
