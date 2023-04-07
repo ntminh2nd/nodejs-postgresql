@@ -89,7 +89,7 @@ const pool = new Pool({
     const { name, email, dob } = request.body;
     const dobConverted = new Date(dob);
     // employees[id].shift();
-    pool.query(`DELETE FROM employees WHERE name = $1, email = $2, dob = $3, id = $4 RETURNING *`, [name, email, dobConverted, id], (error, results) => {
+    pool.query(`DELETE FROM employees WHERE id = $1 RETURNING *`, [id], (error, results) => {
         if (error) {
             return response.status(400).send(err);
         }
